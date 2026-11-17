@@ -31,5 +31,23 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
 .btn.ghost { background: transparent; }
 .link { border: none; background: none; color: var(--brand); cursor: pointer; padding: 0; }
-.page-foot { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--muted); }
+.page-foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; font-size: 12px; color: var(--muted); }
 .error-text { color: #b42318; }
+.info-text { color: #027a48; }
+.sort-badge { font-size: 12px; color: var(--brand); background: #eff4ff; border: 1px solid #c7d7fe; border-radius: 999px; padding: 2px 10px; }
+.located-row { background: #fff8e6; }
+.located-row td { border-color: #f5d67b; }
+.section-title { font-size: 14px; margin: 18px 0 8px; padding-left: 8px; border-left: 3px solid var(--brand); }
+.status-tag { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 12px; border: 1px solid var(--border); }
+.status-已确认, .status-已完成 { color: #027a48; background: #ecfdf3; border-color: #a6f4c5; }
+.status-待确认, .status-待执行 { color: #b54708; background: #fffaeb; border-color: #fedf89; }
+.diff-chip { display: inline-block; margin: 1px 6px 1px 0; padding: 1px 8px; border-radius: 6px; background: #f2f4f7; font-size: 12px; }
+.sub-table { margin: 6px 0; }
+.sub-table th, .sub-table td { background: #fbfcfe; }
+.modal-mask { position: fixed; inset: 0; background: rgba(16, 24, 40, 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; }
+.modal-card { background: #fff; border-radius: 10px; padding: 18px 20px; width: 520px; max-width: 92vw; display: flex; flex-direction: column; gap: 10px; }
+.modal-card h3 { margin: 0; }
+.modal-card textarea { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 8px; font: inherit; resize: vertical; }
+.modal-card input { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+button:disabled { opacity: 0.55; cursor: not-allowed; }

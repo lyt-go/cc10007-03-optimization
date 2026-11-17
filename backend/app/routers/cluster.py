@@ -20,13 +20,35 @@ STATUSES = ["草稿", "聚类计算中", "已完成", "已归档"]
 def list_entries(
     keyword: str | None = Query(default=None, description="按任务编号检索"),
     status: str | None = Query(default=None, description="草稿、聚类计算中、已完成、已归档"),
+    任务编号: str | None = Query(default=None, alias="任务编号"),
+    聚类算法: str | None = Query(default=None, alias="聚类算法"),
+    特征维度: str | None = Query(default=None, alias="特征维度"),
+    关联序列: str | None = Query(default=None, alias="关联序列"),
+    重算状态: str | None = Query(default=None, alias="重算状态"),
+    sort_field: str | None = Query(default=None, description="排序字段：任务编号、轮廓系数、重算状态"),
+    sort_order: str = Query(default="asc", description="asc 或 desc"),
     page: int = 1,
     size: int = 20,
 ) -> PageResult[dict]:
-    """按任务编号与状态过滤聚类分群列表；没有数据时返回空页，不报错。"""
+    """按任务字段过滤并支持排序；没有数据时返回空页，不报错。筛选/排序口径在 service 层统一。"""
     if size > 200:
         raise HTTPException(status_code=400, detail="每页最多 200 条，请缩小分页范围")
-    items, total = service.list_entries(keyword=keyword, status=status, page=page, size=size)
+    filters = {
+        "任务编号": 任务编号,
+        "聚类算法": 聚类算法,
+        "特征维度": 特征维度,
+        "关联序列": 关联序列,
+        "重算状态": 重算状态,
+    }
+    items, total = service.list_entries(
+        keyword=keyword,
+        status=status,
+        filters=filters,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        page=page,
+        size=size,
+    )
     return PageResult(items=items, total=total, page=page, size=size)
 
 

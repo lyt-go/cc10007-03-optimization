@@ -20,13 +20,27 @@ STATUSES = ["草稿", "挖掘中", "已确认", "已归档"]
 def list_entries(
     keyword: str | None = Query(default=None, description="按模式编号检索"),
     status: str | None = Query(default=None, description="草稿、挖掘中、已确认、已归档"),
+    模式编号: str | None = Query(default=None, alias="模式编号"),
+    用户分群: str | None = Query(default=None, alias="用户分群"),
+    事件序列: str | None = Query(default=None, alias="事件序列"),
+    sort_field: str | None = Query(default=None, description="排序字段：模式编号、序列频次、转化率、时间窗口天"),
+    sort_order: str = Query(default="asc", description="asc 或 desc"),
     page: int = 1,
     size: int = 20,
 ) -> PageResult[dict]:
-    """按模式编号与状态过滤行为序列列表；没有数据时返回空页，不报错。"""
+    """按任务字段过滤并支持排序；没有数据时返回空页，不报错。筛选/排序口径在 service 层统一。"""
     if size > 200:
         raise HTTPException(status_code=400, detail="每页最多 200 条，请缩小分页范围")
-    items, total = service.list_entries(keyword=keyword, status=status, page=page, size=size)
+    filters = {"模式编号": 模式编号, "用户分群": 用户分群, "事件序列": 事件序列}
+    items, total = service.list_entries(
+        keyword=keyword,
+        status=status,
+        filters=filters,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        page=page,
+        size=size,
+    )
     return PageResult(items=items, total=total, page=page, size=size)
 
 

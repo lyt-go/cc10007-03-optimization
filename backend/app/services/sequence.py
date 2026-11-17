@@ -1,4 +1,4 @@
-"""行为序列业务规则：状态流转、字段校验与筛选口径都收在这里。"""
+"""行为序列业务规则：状态流转、字段校验、筛选排序口径都收在这里。"""
 from __future__ import annotations
 
 from typing import Any
@@ -11,6 +11,18 @@ STATUS_ORDER = ["草稿", "挖掘中", "已确认", "已归档"]
 ACTION_RULES = {"发起挖掘": "挖掘中", "确认模式": "已确认", "归档模式": "已归档"}
 NEGATIVE_ACTIONS = []
 
+# 支持按字段模糊筛选与排序的列，口径固定后供前端与接口共用
+FILTER_FIELDS = ["模式编号", "用户分群", "事件序列"]
+SORTABLE_FIELDS = ["模式编号", "序列频次", "转化率", "时间窗口天"]
+
+
+def _sort_key(value: Any) -> tuple[int, Any]:
+    """数值字段按数值排，排不动的文本统一放到后面，避免混合类型比较报错。"""
+    try:
+        return 0, float(value)
+    except (TypeError, ValueError):
+        return 1, str(value or "")
+
 
 class SequenceService:
     def list_entries(
@@ -18,14 +30,22 @@ class SequenceService:
         *,
         keyword: str | None = None,
         status: str | None = None,
+        filters: dict[str, str] | None = None,
+        sort_field: str | None = None,
+        sort_order: str = "asc",
         page: int = 1,
         size: int = 20,
     ) -> tuple[list[dict[str, Any]], int]:
-        rows = store.rows(MODULE)
+        rows = [dict(row) for row in store.rows(MODULE)]
         if keyword:
             rows = [row for row in rows if keyword in str(row.get("模式编号", ""))]
         if status:
             rows = [row for row in rows if row.get("status") == status]
+        for field, value in (filters or {}).items():
+            if field in FILTER_FIELDS and value:
+                rows = [row for row in rows if value in str(row.get(field, ""))]
+        if sort_field in SORTABLE_FIELDS:
+            rows.sort(key=lambda row: _sort_key(row.get(sort_field)), reverse=sort_order == "desc")
         total = len(rows)
         start = max(page - 1, 0) * size
         return rows[start:start + size], total
